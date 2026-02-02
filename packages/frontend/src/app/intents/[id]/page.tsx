@@ -64,6 +64,13 @@ export default function IntentDetailPage() {
       : 'bg-purple-500/20 text-purple-400';
   const potential = matchData?.potentialMatches ?? [];
 
+  function matchQualityBadge(score: number) {
+    if (score >= 90) return { label: 'Hot Match', className: 'bg-orange-500/20 text-orange-400' };
+    if (score >= 70) return { label: 'Good Match', className: 'bg-emerald-500/20 text-emerald-400' };
+    if (score >= 50) return { label: 'Possible', className: 'bg-amber-500/20 text-amber-400' };
+    return null;
+  }
+
   return (
     <AppLayout>
       <Link
@@ -119,13 +126,22 @@ export default function IntentDetailPage() {
               Connect with a complementary intent
             </p>
             <div className="mt-4 space-y-3">
-              {potential.map(({ intent: comp, score }) => (
+              {potential.map(({ intent: comp, score }) => {
+                const badge = matchQualityBadge(score);
+                return (
                 <div
                   key={comp._id}
                   className="flex items-center justify-between rounded border border-gray-600 p-3"
                 >
-                  <div>
-                    <p className="font-medium text-white">{comp.title}</p>
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2">
+                      <p className="font-medium text-white">{comp.title}</p>
+                      {badge && (
+                        <span className={`rounded px-2 py-0.5 text-xs font-medium ${badge.className}`}>
+                          {badge.label}
+                        </span>
+                      )}
+                    </div>
                     <p className="text-sm text-gray-400">
                       {comp.skills.join(', ')} · {score}% match
                     </p>
@@ -138,7 +154,8 @@ export default function IntentDetailPage() {
                     {proposing === comp._id ? 'Proposing...' : 'Propose'}
                   </button>
                 </div>
-              ))}
+              );
+              })}
             </div>
           </div>
         )}
@@ -147,13 +164,22 @@ export default function IntentDetailPage() {
           <div className="rounded-lg border border-gray-700 bg-gray-800/50 p-6">
             <h3 className="font-medium text-white">Existing Matches</h3>
             <div className="mt-2 space-y-2">
-              {matchData.existingMatches.map((m) => (
+              {matchData.existingMatches.map((m) => {
+                const badge = matchQualityBadge(m.score);
+                return (
                 <div
                   key={m.matchId}
                   className="flex items-center justify-between text-sm"
                 >
-                  <span className="text-gray-400">
-                    Match {m.status} · Score {m.score}
+                  <span className="flex items-center gap-2">
+                    <span className="text-gray-400">
+                      Match {m.status} · Score {m.score}
+                    </span>
+                    {badge && (
+                      <span className={`rounded px-2 py-0.5 text-xs font-medium ${badge.className}`}>
+                        {badge.label}
+                      </span>
+                    )}
                   </span>
                   <Link
                     href="/matches"
@@ -162,7 +188,8 @@ export default function IntentDetailPage() {
                     View
                   </Link>
                 </div>
-              ))}
+              );
+              })}
             </div>
           </div>
         )}
