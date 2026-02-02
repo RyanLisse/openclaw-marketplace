@@ -1,0 +1,92 @@
+0 verbose cli /opt/homebrew/Cellar/node/25.5.0/bin/node /opt/homebrew/bin/npm
+1 info using npm@11.8.0
+2 info using node@v25.5.0
+3 silly config load:file:/opt/homebrew/lib/node_modules/npm/npmrc
+4 silly config load:file:/Users/shelton/clawd/projects/openclaw-marketplace/packages/contracts/.npmrc
+5 silly config load:file:/Users/shelton/.npmrc
+6 silly config load:file:/Users/shelton/.npm-packages/etc/npmrc
+7 verbose title npm install
+8 verbose argv "install" "--cache" "/Users/shelton/clawd/projects/openclaw-marketplace/packages/contracts/.npm-cache"
+9 verbose logfile logs-max:10 dir:/Users/shelton/clawd/projects/openclaw-marketplace/packages/contracts/.npm-cache/_logs/2026-02-02T17_47_37_908Z-
+10 verbose logfile /Users/shelton/clawd/projects/openclaw-marketplace/packages/contracts/.npm-cache/_logs/2026-02-02T17_47_37_908Z-debug-0.log
+11 silly logfile done cleaning log files
+12 silly packumentCache heap:4496293888 maxSize:1124073472 maxEntrySize:562036736
+13 silly idealTree buildDeps
+14 silly fetch manifest typescript@^5.7.2
+15 silly packumentCache full:https://registry.npmjs.org/typescript cache-miss
+16 http fetch GET 200 https://registry.npmjs.org/npm 115ms
+17 http fetch GET 200 https://registry.npmjs.org/typescript 189ms (cache miss)
+18 silly packumentCache full:https://registry.npmjs.org/typescript set size:undefined disposed:false
+19 silly fetch manifest hardhat@^3.1.5
+20 silly packumentCache full:https://registry.npmjs.org/hardhat cache-miss
+21 http fetch GET 200 https://registry.npmjs.org/hardhat 44ms (cache miss)
+22 silly packumentCache full:https://registry.npmjs.org/hardhat set size:undefined disposed:false
+23 silly fetch manifest @nomicfoundation/hardhat-toolbox@^6.1.0
+24 silly packumentCache full:https://registry.npmjs.org/@nomicfoundation%2fhardhat-toolbox cache-miss
+25 http fetch GET 200 https://registry.npmjs.org/@nomicfoundation%2fhardhat-toolbox 241ms (cache miss)
+26 silly packumentCache full:https://registry.npmjs.org/@nomicfoundation%2fhardhat-toolbox set size:undefined disposed:false
+27 silly fetch manifest @nomicfoundation/hardhat-chai-matchers@^2.1.0
+28 silly packumentCache full:https://registry.npmjs.org/@nomicfoundation%2fhardhat-chai-matchers cache-miss
+29 http fetch GET 200 https://registry.npmjs.org/@nomicfoundation%2fhardhat-chai-matchers 339ms (cache miss)
+30 silly packumentCache full:https://registry.npmjs.org/@nomicfoundation%2fhardhat-chai-matchers set size:undefined disposed:false
+31 silly fetch manifest @nomicfoundation/hardhat-ethers@^3.1.0
+32 silly packumentCache full:https://registry.npmjs.org/@nomicfoundation%2fhardhat-ethers cache-miss
+33 http fetch GET 200 https://registry.npmjs.org/@nomicfoundation%2fhardhat-ethers 636ms (cache miss)
+34 silly packumentCache full:https://registry.npmjs.org/@nomicfoundation%2fhardhat-ethers set size:undefined disposed:false
+35 silly fetch manifest ethers@^6.14.0
+36 silly packumentCache full:https://registry.npmjs.org/ethers cache-miss
+37 http fetch GET 200 https://registry.npmjs.org/ethers 42ms (cache miss)
+38 silly packumentCache full:https://registry.npmjs.org/ethers set size:undefined disposed:false
+39 silly fetch manifest hardhat@^2.28.0
+40 silly packumentCache full:https://registry.npmjs.org/hardhat cache-miss
+41 http cache https://registry.npmjs.org/hardhat 11ms (cache hit)
+42 silly packumentCache full:https://registry.npmjs.org/hardhat set size:1412727 disposed:false
+43 verbose stack Error: unable to resolve dependency tree
+43 verbose stack     at #failPeerConflict (/opt/homebrew/lib/node_modules/npm/node_modules/@npmcli/arborist/lib/arborist/build-ideal-tree.js:1404:25)
+43 verbose stack     at #loadPeerSet (/opt/homebrew/lib/node_modules/npm/node_modules/@npmcli/arborist/lib/arborist/build-ideal-tree.js:1370:33)
+43 verbose stack     at async #loadPeerSet (/opt/homebrew/lib/node_modules/npm/node_modules/@npmcli/arborist/lib/arborist/build-ideal-tree.js:1338:11)
+43 verbose stack     at async #loadPeerSet (/opt/homebrew/lib/node_modules/npm/node_modules/@npmcli/arborist/lib/arborist/build-ideal-tree.js:1338:11)
+43 verbose stack     at async #buildDepStep (/opt/homebrew/lib/node_modules/npm/node_modules/@npmcli/arborist/lib/arborist/build-ideal-tree.js:918:11)
+43 verbose stack     at async Arborist.buildIdealTree (/opt/homebrew/lib/node_modules/npm/node_modules/@npmcli/arborist/lib/arborist/build-ideal-tree.js:170:7)
+43 verbose stack     at async Promise.all (index 1)
+43 verbose stack     at async Arborist.reify (/opt/homebrew/lib/node_modules/npm/node_modules/@npmcli/arborist/lib/arborist/reify.js:110:5)
+43 verbose stack     at async Install.exec (/opt/homebrew/lib/node_modules/npm/lib/commands/install.js:150:5)
+43 verbose stack     at async Npm.exec (/opt/homebrew/lib/node_modules/npm/lib/npm.js:208:9)
+44 error code ERESOLVE
+45 error ERESOLVE unable to resolve dependency tree
+46 error
+47 error While resolving: contracts@0.1.0
+47 error Found: hardhat@3.1.6
+47 error node_modules/hardhat
+47 error   dev hardhat@"^3.1.5" from the root project
+47 error
+47 error Could not resolve dependency:
+47 error peer hardhat@"^2.28.0" from @nomicfoundation/hardhat-ethers@3.1.3
+47 error node_modules/@nomicfoundation/hardhat-ethers
+47 error   peer @nomicfoundation/hardhat-ethers@"^3.1.0" from @nomicfoundation/hardhat-toolbox@6.1.0
+47 error   node_modules/@nomicfoundation/hardhat-toolbox
+47 error     dev @nomicfoundation/hardhat-toolbox@"^6.1.0" from the root project
+47 error   peer @nomicfoundation/hardhat-ethers@"^3.1.0" from @nomicfoundation/hardhat-chai-matchers@2.1.0
+47 error   node_modules/@nomicfoundation/hardhat-chai-matchers
+47 error     peer @nomicfoundation/hardhat-chai-matchers@"^2.1.0" from @nomicfoundation/hardhat-toolbox@6.1.0
+47 error     node_modules/@nomicfoundation/hardhat-toolbox
+47 error       dev @nomicfoundation/hardhat-toolbox@"^6.1.0" from the root project
+47 error
+47 error Fix the upstream dependency conflict, or retry
+47 error this command with --force or --legacy-peer-deps
+47 error to accept an incorrect (and potentially broken) dependency resolution.
+48 error
+48 error
+48 error For a full report see:
+48 error /Users/shelton/clawd/projects/openclaw-marketplace/packages/contracts/.npm-cache/_logs/2026-02-02T17_47_37_908Z-eresolve-report.txt
+49 silly unfinished npm timer reify 1770054458221
+50 silly unfinished npm timer reify:loadTrees 1770054458222
+51 silly unfinished npm timer idealTree:buildDeps 1770054458228
+52 silly unfinished npm timer idealTree:#root 1770054458229
+53 verbose cwd /Users/shelton/clawd/projects/openclaw-marketplace/packages/contracts
+54 verbose os Darwin 25.3.0
+55 verbose node v25.5.0
+56 verbose npm  v11.8.0
+57 verbose exit 1
+58 verbose code 1
+59 error A complete log of this run can be found in: /Users/shelton/clawd/projects/openclaw-marketplace/packages/contracts/.npm-cache/_logs/2026-02-02T17_47_37_908Z-debug-0.log

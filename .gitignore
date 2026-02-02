@@ -1,0 +1,48 @@
+# Node
+node_modules/
+npm-debug.log
+yarn-error.log
+.pnpm-debug.log
+package-lock.json
+yarn.lock
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Build
+dist/
+build/
+.next/
+out/
+.pnpm-store/
+
+# Convex compiled (Convex builds these)
+convex/*.js
+convex/*.d.ts
+convex/*.d.ts.map
+
+# Beads
+.beads/
+
+# OpenProse
+.prose/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Test
+coverage/
+
+# Temp
+tmp/
+temp/
+*.tmp

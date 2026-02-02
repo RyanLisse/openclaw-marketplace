@@ -1,0 +1,23 @@
+{
+  "name": "@openclaw/core",
+  "version": "0.1.0",
+  "description": "OpenClaw Marketplace - Core intent processing library (agent-native)",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "test": "echo 'No tests yet'"
+  },
+  "keywords": [
+    "openclaw",
+    "intents",
+    "blockchain",
+    "agent-native"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "typescript": "^5.3.3"
+  }
+}

@@ -1,0 +1,225 @@
+# OpenClaw Marketplace - Complete Development Workflow
+# Using beads-workflow + agent swarm orchestration
+
+## Phase 1: Convert Plan to Beads
+
+session "plan-to-beads" with claude-code {
+  goal: "Convert PLAN_INITIAL.md into comprehensive beads"
+  
+  context: """
+  You are converting a 30KB architectural plan into executable beads.
+  
+  Key files to read:
+  - PLAN_INITIAL.md (the architecture)
+  - RESEARCH.md (ecosystem context)
+  - AGENTS.md (beads methodology)
+  
+  Use the exact prompt from beads-workflow skill:
+  
+  'OK so now read ALL of PLAN_INITIAL.md; please take ALL of that and 
+  elaborate on it and use it to create a comprehensive and granular set 
+  of beads for all this with tasks, subtasks, and dependency structure 
+  overlaid, with detailed comments so that the whole thing is totally 
+  self-contained and self-documenting (including relevant background, 
+  reasoning/justification, considerations, etc.-- anything we'd want our 
+  "future self" to know about the goals and intentions and thought process 
+  and how it serves the over-arching goals of the project.). 
+  
+  The beads should be so detailed that we never need to consult back to 
+  the original markdown plan document. 
+  
+  Remember to ONLY use the `bd` tool to create and modify the beads and 
+  add the dependencies. Use ultrathink.'
+  """
+  
+  success_criteria: """
+  - All major features from PLAN_INITIAL.md are beads
+  - Dependencies are explicit
+  - Each bead is self-contained
+  - Tests are included in bead scope
+  - `bd list` shows 30-40 beads
+  """
+}
+
+## Phase 2: Polish Beads (6+ rounds)
+
+session "polish-round-1" with claude-code {
+  depends: "plan-to-beads"
+  
+  goal: "First polish pass on beads"
+  
+  context: """
+  Read AGENTS.md to refresh on polishing methodology.
+  
+  Use the exact prompt from beads-workflow skill:
+  
+  'Reread AGENTS dot md so it's still fresh in your mind. Check over 
+  each bead super carefully-- are you sure it makes sense? Is it optimal? 
+  Could we change anything to make the system work better for users? 
+  If so, revise the beads. It's a lot easier and faster to operate in 
+  "plan space" before we start implementing these things!
+  
+  DO NOT OVERSIMPLIFY THINGS! DO NOT LOSE ANY FEATURES OR FUNCTIONALITY!
+  
+  Also, make sure that as part of these beads, we include comprehensive 
+  unit tests and e2e test scripts with great, detailed logging so we can 
+  be sure that everything is working perfectly after implementation. 
+  Remember to ONLY use the `bd` tool to create and modify the beads and 
+  to add the dependencies to beads. Use ultrathink.'
+  """
+  
+  success_criteria: "At least 3 beads revised or dependencies clarified"
+}
+
+session "polish-round-2" with claude-code {
+  depends: "polish-round-1"
+  goal: "Second polish pass"
+  context: "Same prompt as polish-round-1, focus on test coverage"
+}
+
+session "polish-round-3" with claude-code {
+  depends: "polish-round-2"
+  goal: "Third polish pass"
+  context: "Same prompt, focus on dependency correctness"
+}
+
+session "polish-round-4" with claude-code {
+  depends: "polish-round-3"
+  goal: "Fourth polish pass"
+  context: "Same prompt, focus on completeness"
+}
+
+session "polish-round-5" with claude-code {
+  depends: "polish-round-4"
+  goal: "Fifth polish pass"
+  context: "Same prompt, check for oversimplification"
+}
+
+session "polish-round-6" with claude-code {
+  depends: "polish-round-5"
+  goal: "Sixth polish pass - approaching steady-state"
+  context: "Same prompt, verify nothing lost from original plan"
+}
+
+## Phase 3: Cross-Model Review
+
+session "codex-review" with codex {
+  depends: "polish-round-6"
+  
+  goal: "Final review pass with GPT 5.2"
+  
+  context: """
+  You are doing a final quality check on polished beads for 
+  OpenClaw Intent Marketplace.
+  
+  Read all beads with `bd list --format json` and review:
+  - Are dependencies correct?
+  - Is anything oversimplified?
+  - Are tests comprehensive?
+  - Does the bead graph make logical sense?
+  
+  Use `bv --robot-insights` to check for cycles and bottlenecks.
+  """
+  
+  success_criteria: "No cycles, no missing dependencies, tests complete"
+}
+
+## Phase 4: Verify Beads Ready
+
+session "verify-ready" with claude-code {
+  depends: "codex-review"
+  
+  goal: "Final verification before agent swarm execution"
+  
+  context: """
+  Run these checks:
+  
+  1. `bd list --status open` - Should show 30-40 beads
+  2. `bv --robot-insights` - No cycles, clear critical path
+  3. `bd ready` - Should show foundation beads with no deps
+  4. `bd list --format json | jq '.[] | select(.test_coverage == false)'` - Should be empty
+  
+  If all checks pass, report: "BEADS READY FOR EXECUTION"
+  
+  If any check fails, create additional beads or fix dependencies.
+  """
+  
+  success_criteria: "All checks pass, beads ready for agent swarm"
+}
+
+## Phase 5: Execute via Agent Swarm
+
+# NOTE: This phase would typically be executed via NTM manually
+# after beads are verified. Including here for completeness.
+
+session "swarm-setup" with claude-code {
+  depends: "verify-ready"
+  
+  goal: "Set up NTM agent swarm for parallel execution"
+  
+  context: """
+  Initialize agent swarm:
+  
+  ```bash
+  cd ~/clawd/projects/openclaw-marketplace
+  
+  # Create workspace
+  ntm workspace create inkwell-swarm
+  
+  # Add agents with different models to avoid rate limits
+  ntm agent add claude-1 claude-code
+  ntm agent add claude-2 claude-code  
+  ntm agent add glm-1 glm-cli
+  ntm agent add gemini-1 gemini
+  
+  # Show status
+  ntm status
+  ```
+  
+  Then use `bv --robot-plan` to get parallel execution tracks
+  and assign work:
+  
+  ```bash
+  # Example assignments (adjust based on bv output)
+  ntm assign Inkwell-001 claude-1  # Foundation
+  ntm assign Inkwell-008 claude-2  # Smart contracts (parallel)
+  ntm assign Inkwell-020 glm-1     # Design system (parallel)
+  ```
+  """
+  
+  success_criteria: """
+  - NTM workspace created
+  - 4 agents active
+  - Foundation beads assigned
+  - `ntm status` shows agents working
+  """
+}
+
+## Summary & Next Steps
+
+session "orchestrator-summary" with claude-code {
+  depends: "swarm-setup"
+  
+  goal: "Provide Ryan with execution status and next steps"
+  
+  context: """
+  Summarize what's been accomplished:
+  
+  1. Plan converted to beads (how many?)
+  2. Polished 6+ rounds
+  3. Cross-model reviewed
+  4. Verified ready for execution
+  5. Agent swarm initialized
+  
+  Show critical path from `bv --robot-insights`
+  Show parallel tracks from `bv --robot-plan`
+  Show ready beads from `bd ready`
+  
+  Next steps:
+  - Monitor agent progress: `ntm status`
+  - Check blocking issues: `bv --robot-triage`
+  - Review completed work: `bd list --status closed`
+  """
+  
+  success_criteria: "Clear summary delivered, Ryan knows what to monitor"
+}
