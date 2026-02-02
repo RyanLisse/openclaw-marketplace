@@ -29,6 +29,9 @@ convex/*.d.ts.map
 # OpenProse
 .prose/
 
+# Serena (local tooling)
+.serena/
+
 # OS
 .DS_Store
 Thumbs.db
