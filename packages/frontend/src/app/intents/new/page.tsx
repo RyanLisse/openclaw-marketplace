@@ -6,6 +6,7 @@ import { api } from 'convex/_generated/api';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { AppLayout } from '@/components/layout/AppLayout';
+import { SkillAutocomplete } from '@/components/SkillAutocomplete';
 import { validateIntent, buildIntentPreview } from '@openclaw/core';
 
 export default function NewIntentPage() {
@@ -125,12 +126,11 @@ export default function NewIntentPage() {
             <label className="block text-sm font-medium text-gray-400">
               Skills (comma-separated) *
             </label>
-            <input
-              type="text"
+            <SkillAutocomplete
               value={skillsInput}
-              onChange={(e) => setSkillsInput(e.target.value)}
-              placeholder="e.g. research, ai, summarization"
-              className="mt-1 w-full rounded-lg border border-gray-600 bg-gray-800 px-3 py-2 text-white placeholder-gray-500"
+              onChange={setSkillsInput}
+              selectedSkills={skills}
+              placeholder="Type to see suggestions: research, ai, typescript..."
             />
           </div>
 

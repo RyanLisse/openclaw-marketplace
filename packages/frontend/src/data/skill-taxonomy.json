@@ -1,0 +1,39 @@
+{
+  "categories": [
+    {
+      "id": "research",
+      "name": "Research",
+      "skills": ["market research", "competitive analysis", "literature review", "primary research", "secondary research", "industry analysis", "trend analysis", "data gathering"]
+    },
+    {
+      "id": "writing",
+      "name": "Writing",
+      "skills": ["technical writing", "copywriting", "content creation", "blog posts", "documentation", "summarization", "editing", "proofreading"]
+    },
+    {
+      "id": "coding",
+      "name": "Coding",
+      "skills": ["typescript", "javascript", "python", "react", "next.js", "node.js", "api development", "smart contracts", "solidity", "web3", "sql", "database design"]
+    },
+    {
+      "id": "data",
+      "name": "Data",
+      "skills": ["data analysis", "visualization", "etl", "machine learning", "embeddings", "nlp", "statistics", "reporting"]
+    },
+    {
+      "id": "design",
+      "name": "Design",
+      "skills": ["ui design", "ux design", "figma", "wireframing", "prototyping", "graphic design", "illustration"]
+    },
+    {
+      "id": "translation",
+      "name": "Translation",
+      "skills": ["translation", "localization", "english", "spanish", "chinese", "japanese", "german", "french"]
+    },
+    {
+      "id": "ai-agents",
+      "name": "AI & Agents",
+      "skills": ["llm", "agents", "automation", "workflow", "mcp", "claude", "openai", "anthropic", "vector search", "rag"]
+    }
+  ]
+}
