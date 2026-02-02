@@ -1,110 +1,144 @@
+import type { Id } from "./_generated/dataModel";
 import { v } from "convex/values";
-import { internalMutation } from "./_generated/server";
+import { internalAction, internalMutation, internalQuery } from "./_generated/server";
+import { internal } from "./_generated/api";
 
 /**
  * Matching Tool Cluster
  * Hybrid algorithm combining vector similarity + metadata scoring.
+ * Vector search requires action context; mutation handles DB writes.
  */
 
-// Weights for scoring
 const WEIGHTS = {
-    VECTOR: 0.4,
-    REPUTATION: 0.2,
-    PRICE: 0.2,
-    SKILLS: 0.2,
+  VECTOR: 0.4,
+  REPUTATION: 0.2,
+  PRICE: 0.2,
+  SKILLS: 0.2,
 };
 
-export const findMatches = internalMutation({
-    args: {
-        intentId: v.id("intents"),
-    },
-    handler: async (ctx, args) => {
-        const sourceIntent = await ctx.db.get(args.intentId);
-        if (!sourceIntent || !sourceIntent.embedding) return;
+export const getIntentForMatch = internalQuery({
+  args: { intentId: v.id("intents") },
+  handler: async (ctx, args) => {
+    return await ctx.db.get(args.intentId);
+  },
+});
 
-        // 1. Vector Search Candidate Generation (Top 20)
-        // Find opposites: 'need' seeks 'offer', 'offer' seeks 'need'
-        const targetType = sourceIntent.type === 'need' ? 'offer' : 'need';
+export const createMatchRecord = internalMutation({
+  args: {
+    needIntentId: v.id("intents"),
+    offerIntentId: v.id("intents"),
+    score: v.number(),
+    needAgentId: v.string(),
+    offerAgentId: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const existing = await ctx.db
+      .query("matches")
+      .withIndex("by_agents", (q) =>
+        q.eq("needAgentId", args.needAgentId).eq("offerAgentId", args.offerAgentId)
+      )
+      .first();
+    if (existing) return;
+    await ctx.db.insert("matches", {
+      needIntentId: args.needIntentId,
+      offerIntentId: args.offerIntentId,
+      score: args.score,
+      algorithm: "hybrid_v1",
+      status: "proposed",
+      needAgentId: args.needAgentId,
+      offerAgentId: args.offerAgentId,
+      createdAt: Date.now(),
+    });
+  },
+});
 
-        // Use the Search index for broad filtering by type/status first if needed,
-        // but vector search is best.
-        const candidates = await ctx.db.vectorSearch("intents", "by_embedding", {
-            vector: sourceIntent.embedding,
-            limit: 20,
-            filter: (q) => q.and(
-                q.eq("type", targetType),
-                q.eq("status", "open")
-            ),
-        });
+export const findMatches = internalAction({
+  args: { intentId: v.id("intents") },
+  handler: async (ctx, args) => {
+    const sourceIntent = await ctx.runQuery(internal.matching.getIntentForMatch, {
+      intentId: args.intentId,
+    });
+    if (!sourceIntent || !sourceIntent.embedding) return;
 
-        for (const candidateResult of candidates) {
-            const candidate = await ctx.db.get(candidateResult._id);
-            if (!candidate) continue;
+    const targetType = sourceIntent.type === "need" ? "offer" : "need";
 
-            // Avoid self-matching
-            if (candidate.agentId === sourceIntent.agentId) continue;
+    const candidates = await ctx.vectorSearch("intents", "by_embedding", {
+      vector: sourceIntent.embedding,
+      limit: 20,
+      filter: (q) => q.eq("type", targetType),
+    });
 
-            // 2. Metadata Scoring
+    for (const candidateResult of candidates) {
+      const candidate = await ctx.runQuery(internal.matching.getIntentForMatch, {
+        intentId: candidateResult._id as Id<"intents">,
+      });
+      if (!candidate) continue;
+      if (candidate.status !== "open") continue;
 
-            // A. Reputation Score (Normalized 0-1)
-            const agent = await ctx.db
-                .query("agents")
-                .withIndex("by_agent_id", (q) => q.eq("agentId", candidate.agentId))
-                .first();
-            const reputationScore = (agent?.reputationScore || 50) / 100;
+      if (candidate.agentId === sourceIntent.agentId) continue;
 
-            // B. Price Compatibility (Simple overlap check)
-            // Logic: If models match OR not specified, good. If currency mismatch, bad.
-            let priceScore = 0.5;
-            if (sourceIntent.currency === candidate.currency) {
-                priceScore = 0.8;
-                // If source has budget >= candidate amount
-                if (sourceIntent.amount && candidate.amount && sourceIntent.amount >= candidate.amount) {
-                    priceScore = 1.0;
-                }
-            }
+      const agent = await ctx.runQuery(internal.matching.getAgentByAgentId, {
+        agentId: candidate.agentId,
+      });
+      const reputationScore = (agent?.reputationScore ?? 50) / 100;
 
-            // C. Skills Overlap (Jaccard Index)
-            const sourceSkills = new Set(sourceIntent.skills);
-            const candSkills = new Set(candidate.skills);
-            const intersection = new Set([...sourceSkills].filter(x => candSkills.has(x)));
-            const union = new Set([...sourceSkills, ...candSkills]);
-            const skillScore = union.size === 0 ? 0 : intersection.size / union.size;
-
-            // 3. Final Weighted Score
-            const vectorScore = candidateResult._score; // Cosine similarity (0-1)
-
-            const finalScore = (
-                (vectorScore * WEIGHTS.VECTOR) +
-                (reputationScore * WEIGHTS.REPUTATION) +
-                (priceScore * WEIGHTS.PRICE) +
-                (skillScore * WEIGHTS.SKILLS)
-            ) * 100; // Scale to 0-100
-
-            // 4. Create Match Record if score is decent (> 60)
-            if (finalScore > 60) {
-                // Check if match already exists
-                const existing = await ctx.db
-                    .query("matches")
-                    .withIndex("by_agents", (q) =>
-                        q.eq("needAgentId", sourceIntent.type === 'need' ? sourceIntent.agentId : candidate.agentId)
-                            .eq("offerAgentId", sourceIntent.type === 'offer' ? sourceIntent.agentId : candidate.agentId)
-                    )
-                    .first();
-
-                if (!existing) {
-                    await ctx.db.insert("matches", {
-                        needIntentId: sourceIntent.type === 'need' ? sourceIntent._id : candidate._id,
-                        offerIntentId: sourceIntent.type === 'offer' ? sourceIntent._id : candidate._id,
-                        score: Math.round(finalScore),
-                        algorithm: "hybrid_v1",
-                        status: "proposed",
-                        needAgentId: sourceIntent.type === 'need' ? sourceIntent.agentId : candidate.agentId,
-                        offerAgentId: sourceIntent.type === 'offer' ? sourceIntent.agentId : candidate.agentId,
-                        createdAt: Date.now(),
-                    });
-                }
-            }
+      let priceScore = 0.5;
+      if (sourceIntent.currency === candidate.currency) {
+        priceScore = 0.8;
+        if (
+          sourceIntent.amount != null &&
+          candidate.amount != null &&
+          sourceIntent.amount >= candidate.amount
+        ) {
+          priceScore = 1;
         }
-    },
+      }
+
+      const sourceSkills = new Set(sourceIntent.skills);
+      const candSkills = new Set(candidate.skills);
+      const intersection = new Set([...sourceSkills].filter((x) => candSkills.has(x)));
+      const union = new Set([...sourceSkills, ...candSkills]);
+      const skillScore = union.size === 0 ? 0 : intersection.size / union.size;
+
+      const vectorScore = candidateResult._score ?? 0;
+      const finalScore =
+        (vectorScore * WEIGHTS.VECTOR +
+          reputationScore * WEIGHTS.REPUTATION +
+          priceScore * WEIGHTS.PRICE +
+          skillScore * WEIGHTS.SKILLS) *
+        100;
+
+      if (finalScore > 60) {
+        await ctx.runMutation(internal.matching.createMatchRecord, {
+          needIntentId:
+            sourceIntent.type === "need"
+              ? (sourceIntent._id as Id<"intents">)
+              : (candidate._id as Id<"intents">),
+          offerIntentId:
+            sourceIntent.type === "offer"
+              ? (sourceIntent._id as Id<"intents">)
+              : (candidate._id as Id<"intents">),
+          score: Math.round(finalScore),
+          needAgentId:
+            sourceIntent.type === "need"
+              ? sourceIntent.agentId
+              : candidate.agentId,
+          offerAgentId:
+            sourceIntent.type === "offer"
+              ? sourceIntent.agentId
+              : candidate.agentId,
+        });
+      }
+    }
+  },
+});
+
+export const getAgentByAgentId = internalQuery({
+  args: { agentId: v.string() },
+  handler: async (ctx, args) => {
+    return await ctx.db
+      .query("agents")
+      .withIndex("by_agent_id", (q) => q.eq("agentId", args.agentId))
+      .first();
+  },
 });

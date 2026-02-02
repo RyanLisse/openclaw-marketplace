@@ -1,11 +1,15 @@
+"use node";
+
 import { v } from "convex/values";
-import { action } from "../_generated/server";
+import { action, internalAction } from "../_generated/server";
 import { internal } from "../_generated/api";
 import OpenAI from "openai";
 
-const openai = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY,
-});
+function getOpenAI() {
+    const key = process.env.OPENAI_API_KEY;
+    if (!key) throw new Error("OPENAI_API_KEY is not set");
+    return new OpenAI({ apiKey: key });
+}
 
 export const generateEmbedding = action({
     args: {
@@ -13,7 +17,7 @@ export const generateEmbedding = action({
         intentId: v.id("intents"),
     },
     handler: async (ctx, args) => {
-        // Generate embedding
+        const openai = getOpenAI();
         const response = await openai.embeddings.create({
             model: "text-embedding-3-small",
             input: args.text,
@@ -28,8 +32,8 @@ export const generateEmbedding = action({
             embedding,
         });
 
-        // Trigger Matching Engine
-        await ctx.runMutation(internal.matching.findMatches, {
+        // Trigger Matching Engine (internalAction)
+        await ctx.runAction(internal.matching.findMatches, {
             intentId: args.intentId,
         });
 
@@ -43,6 +47,7 @@ export const analyzeDispute = internalAction({
         evidence: v.string(),
     },
     handler: async (ctx, args) => {
+        const openai = getOpenAI();
         const completion = await openai.chat.completions.create({
             model: "gpt-4o",
             messages: [

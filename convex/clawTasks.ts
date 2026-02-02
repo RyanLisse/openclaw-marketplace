@@ -1,5 +1,6 @@
+import type { Id } from "./_generated/dataModel";
 import { v } from "convex/values";
-import { action, internalMutation, mutation, query } from "./_generated/server";
+import { action, internalMutation } from "./_generated/server";
 import { internal } from "./_generated/api";
 
 /**
@@ -14,7 +15,7 @@ export const importBounty = action({
         bountyUrl: v.string(),
         bountyId: v.optional(v.string()),
     },
-    handler: async (ctx, args) => {
+    handler: async (ctx, args): Promise<{ success: boolean; intentId: Id<"intents"> }> => {
         // 1. Fetch Bounty Details
         // Mocked request to ClawTasks API
         // const res = await fetch(`https://clawtasks.com/api/bounties/${args.bountyId}`);
@@ -30,7 +31,7 @@ export const importBounty = action({
         };
 
         // 2. Create Intent via Internal Mutation
-        const intentId = await ctx.runMutation(internal.clawTasks.createImportedIntent, {
+        const intentId: Id<"intents"> = await ctx.runMutation(internal.clawTasks.createImportedIntent, {
             agentId: args.agentId,
             bountyData: mockBounty,
             url: args.bountyUrl,

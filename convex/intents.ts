@@ -1,4 +1,4 @@
-import { mutation, query } from "./_generated/server";
+import { internalMutation, mutation, query } from "./_generated/server";
 import { v } from "convex/values";
 
 // Marketplace intents (intents table) - for agent needs/offers
@@ -55,6 +55,16 @@ export const create = mutation({
       ...(args.metadata && { metadata: args.metadata }),
     });
     return { intentId, status: "created" };
+  },
+});
+
+export const patchEmbedding = internalMutation({
+  args: {
+    intentId: v.id("intents"),
+    embedding: v.array(v.float64()),
+  },
+  handler: async (ctx, args) => {
+    await ctx.db.patch(args.intentId, { embedding: args.embedding });
   },
 });
 
