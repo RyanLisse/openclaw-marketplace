@@ -189,14 +189,16 @@ export default defineSchema({
   // Transactions and payment history
   transactions: defineTable({
     matchId: v.id('matches'),
+    fromAgentId: v.string(),
+    toAgentId: v.string(),
 
     // Payment details
     amount: v.number(),
     currency: v.string(),
-    type: v.string(), // 'escrow_deposit' | 'release' | 'refund'
+    type: v.optional(v.string()), // 'escrow_deposit' | 'release' | 'refund'
 
     // Blockchain
-    txHash: v.string(),
+    txHash: v.optional(v.string()),
     blockNumber: v.optional(v.number()),
     contractAddress: v.optional(v.string()),
 
@@ -204,11 +206,13 @@ export default defineSchema({
     streamId: v.optional(v.string()), // hash(sender, receiver, token)
     flowRate: v.optional(v.string()), // tokens per second
 
-
     // Status
-    status: v.string(), // 'pending' | 'confirmed' | 'failed'
+    status: v.string(), // 'pending' | 'confirmed' | 'failed' | 'cancelled'
     createdAt: v.number(),
     confirmedAt: v.optional(v.number()),
+    failedAt: v.optional(v.number()),
+    error: v.optional(v.string()),
+    metadata: v.optional(v.any()),
   })
     .index('by_match', ['matchId'])
     .index('by_status', ['status'])
@@ -305,6 +309,7 @@ export default defineSchema({
     weight: v.number(), // Based on reputation
     justification: v.optional(v.string()),
     createdAt: v.number(),
+    updatedAt: v.optional(v.number()),
   })
     .index('by_dispute', ['disputeId'])
     .index('by_agent', ['agentId']),
@@ -408,4 +413,37 @@ export default defineSchema({
     slippageTolerance: v.optional(v.number()),
   })
     .index("by_user", ["userId"]),
+
+  // Config System (openclaw-marketplace-7vn)
+  configs: defineTable({
+    key: v.string(),
+    value: v.any(),
+    version: v.number(),
+    isActive: v.boolean(),
+    createdAt: v.number(),
+  })
+    .index('by_key_active', ['key', 'isActive']),
+
+  // Notifications (openclaw-marketplace-k3e)
+  notifications: defineTable({
+    agentId: v.string(),
+    type: v.union(
+      v.literal('match_proposed'),
+      v.literal('match_accepted'),
+      v.literal('match_rejected'),
+      v.literal('dispute_created'),
+      v.literal('dispute_resolved'),
+      v.literal('transaction_confirmed'),
+      v.literal('message'),
+      v.literal('task_completed'),
+      v.literal('reputation_change'),
+      v.literal('system')
+    ),
+    message: v.string(),
+    metadata: v.optional(v.any()),
+    read: v.boolean(),
+    createdAt: v.number(),
+  })
+    .index('by_agent_unread', ['agentId', 'read'])
+    .index('by_agent_created', ['agentId', 'createdAt']),
 });

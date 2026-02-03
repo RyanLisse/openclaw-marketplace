@@ -106,3 +106,58 @@ export const resolveDispute = internalMutation({
         // This depends on the specific ruling.
     },
 });
+
+// CRUD Operations
+
+export const get = query({
+    args: {
+        id: v.id("disputes"),
+    },
+    handler: async (ctx, args) => {
+        const dispute = await ctx.db.get(args.id);
+        if (!dispute) throw new Error(`Dispute ${args.id} not found`);
+        return dispute;
+    },
+});
+
+export const list = query({
+    args: {
+        agentId: v.optional(v.string()),
+        status: v.optional(v.string()),
+        tier: v.optional(v.number()),
+    },
+    handler: async (ctx, args) => {
+        let q = ctx.db.query("disputes").order("desc");
+        
+        let disputes = await q.take(100);
+        
+        if (args.agentId) {
+            disputes = disputes.filter((d) => d.initiatorAgentId === args.agentId);
+        }
+        if (args.status) {
+            disputes = disputes.filter((d) => d.status === args.status);
+        }
+        if (args.tier !== undefined) {
+            disputes = disputes.filter((d) => d.tier === args.tier);
+        }
+        
+        return disputes;
+    },
+});
+
+export const remove = mutation({
+    args: {
+        disputeId: v.id("disputes"),
+        // TODO: Add authentication check for admin-only access
+    },
+    handler: async (ctx, args) => {
+        const dispute = await ctx.db.get(args.disputeId);
+        if (!dispute) throw new Error(`Dispute ${args.disputeId} not found`);
+
+        // TODO: Check if caller is admin
+        // For now, allowing removal (should add auth check in future)
+        
+        await ctx.db.delete(args.disputeId);
+        return { disputeId: args.disputeId, status: "removed" };
+    },
+});

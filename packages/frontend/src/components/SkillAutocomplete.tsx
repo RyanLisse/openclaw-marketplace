@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useMemo } from 'react';
 import taxonomy from '@/data/skill-taxonomy.json';
 
 type SkillTaxonomy = {
@@ -41,22 +41,19 @@ export function SkillAutocomplete({
   selectedSkills,
   placeholder = 'e.g. research, ai, summarization',
 }: SkillAutocompleteProps) {
-  const [suggestions, setSuggestions] = useState<{ skill: string; category: string }[]>([]);
-  const [open, setOpen] = useState(false);
+  const suggestions = useMemo(
+    () => matchSkills(value, selectedSkills),
+    [value, selectedSkills]
+  );
+  const [closedByUser, setClosedByUser] = useState(false);
+  const open = suggestions.length > 0 && !closedByUser;
   const [highlight, setHighlight] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const m = matchSkills(value, selectedSkills);
-    setSuggestions(m);
-    setHighlight(0);
-    setOpen(m.length > 0);
-  }, [value, selectedSkills]);
-
-  useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
       if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
-        setOpen(false);
+        setClosedByUser(true);
       }
     }
     document.addEventListener('mousedown', handleClickOutside);
@@ -68,9 +65,12 @@ export function SkillAutocomplete({
       ? selectedSkills
       : [...selectedSkills, skill];
     onChange(next.join(', '));
-    setOpen(false);
-    setSuggestions([]);
+    setClosedByUser(true);
   }
+
+  const effectiveHighlight = suggestions.length
+    ? Math.min(highlight, suggestions.length - 1)
+    : 0;
 
   function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
     if (!open || suggestions.length === 0) return;
@@ -80,11 +80,11 @@ export function SkillAutocomplete({
     } else if (e.key === 'ArrowUp') {
       e.preventDefault();
       setHighlight((h) => (h - 1 + suggestions.length) % suggestions.length);
-    } else if (e.key === 'Enter' && suggestions[highlight]) {
+    } else if (e.key === 'Enter' && suggestions[effectiveHighlight]) {
       e.preventDefault();
-      select(suggestions[highlight].skill);
+      select(suggestions[effectiveHighlight].skill);
     } else if (e.key === 'Escape') {
-      setOpen(false);
+      setClosedByUser(true);
     }
   }
 
@@ -94,7 +94,7 @@ export function SkillAutocomplete({
         type="text"
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        onFocus={() => suggestions.length > 0 && setOpen(true)}
+        onFocus={() => setClosedByUser(false)}
         onKeyDown={handleKeyDown}
         placeholder={placeholder}
         className="mt-1 w-full rounded-lg border border-gray-600 bg-gray-800 px-3 py-2 text-white placeholder-gray-500"
@@ -108,9 +108,9 @@ export function SkillAutocomplete({
             <li
               key={skill}
               role="option"
-              aria-selected={i === highlight}
+              aria-selected={i === effectiveHighlight}
               className={`cursor-pointer px-3 py-2 text-sm ${
-                i === highlight ? 'bg-emerald-600/30 text-white' : 'text-gray-300 hover:bg-gray-700'
+                i === effectiveHighlight ? 'bg-emerald-600/30 text-white' : 'text-gray-300 hover:bg-gray-700'
               }`}
               onClick={() => select(skill)}
               onMouseEnter={() => setHighlight(i)}

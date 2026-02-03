@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+  "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.openclaw-marketplace.e2e-daily</string>
+
+    <key>ProgramArguments</key>
+    <array>
+        <string>/bin/bash</string>
+        <string>/Users/shelton/clawd/projects/openclaw-marketplace/scripts/e2e/daily-e2e-test.sh</string>
+        <string>http://localhost:3000</string>
+    </array>
+
+    <key>StartCalendarInterval</key>
+    <dict>
+        <key>Hour</key>
+        <integer>9</integer>
+        <key>Minute</key>
+        <integer>0</integer>
+    </dict>
+
+    <key>EnvironmentVariables</key>
+    <dict>
+        <key>PATH</key>
+        <string>/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/Users/shelton/.local/bin</string>
+        <key>HOME</key>
+        <string>/Users/shelton</string>
+    </dict>
+
+    <key>WorkingDirectory</key>
+    <string>/Users/shelton/clawd/projects/openclaw-marketplace</string>
+
+    <key>StandardOutPath</key>
+    <string>/Users/shelton/clawd/projects/openclaw-marketplace/logs/e2e/launchd-stdout.log</string>
+    <key>StandardErrorPath</key>
+    <string>/Users/shelton/clawd/projects/openclaw-marketplace/logs/e2e/launchd-stderr.log</string>
+
+    <key>RunAtLoad</key>
+    <false/>
+</dict>
+</plist>

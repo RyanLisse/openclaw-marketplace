@@ -44,17 +44,64 @@ export const generateEmbedding = action({
 export const analyzeDispute = internalAction({
     args: {
         disputeId: v.id("disputes"),
+        matchId: v.string(),
+        providerReputation: v.number(),
+        clientReputation: v.number(),
+        amount: v.string(),
+        tier: v.number(),
         evidence: v.string(),
     },
     handler: async (ctx, args) => {
         const openai = getOpenAI();
+        
+        // Load prompt template from file
+        const promptTemplate = await ctx.storage.getUrl(`prompts/dispute_mediation.md`);
+        let systemPrompt = "You are an impartial dispute mediator for the OpenClaw AI Marketplace.";
+        
+        // Inject context variables
+        const contextPrompt = `
+## Dispute Context
+- Match ID: $!{args.matchId}
+- Provider Reputation: $!{args.providerReputation}
+- Client Reputation: $!{args.clientReputation}
+- Transaction Amount: $!{args.amount}
+- Dispute Tier: $!{args.tier}
+
+## Evidence
+$!{args.evidence}
+
+## Task
+Analyze the evidence and provide a structured JSON response with your decision, confidence score, reasoning, and reputation impact. Follow the resolution options defined in the dispute mediation prompt.
+`;
+        
         const completion = await openai.chat.completions.create({
             model: "gpt-4o",
+            temperature: 0.1,
             messages: [
-                { role: "system", content: "You are an impartial dispute mediator for an AI marketplace. Analyze the evidence and propose a fair resolution: 'uphold' (pay provider) or 'refund' (return to client). Provide confidence score (0-100)." },
-                { role: "user", content: `Evidence: ${args.evidence}` }
+                { role: "system", content: systemPrompt },
+                { role: "user", content: contextPrompt }
             ],
+            response_format: { type: "json_object" },
         });
+
+        const analysis = JSON.parse(completion.choices[0].message.content || "{}");
+        
+        // Auto-resolve if confidence high enough for this tier
+        const autoResolveThreshold = args.tier === 1 ? 90 : 80;
+        if (analysis.confidence >= autoResolveThreshold) {
+            await ctx.runMutation(internal.disputes.resolveDispute, {
+                disputeId: args.disputeId,
+                resolution: analysis.decision,
+                winnerAgentId: analysis.decision === "uphold" ? "provider" : analysis.decision === "refund" ? "client" : undefined,
+            });
+        } else if (analysis.escalationRecommendation !== "none") {
+            // Escalate to next tier
+            // TODO: implement escalation logic
+        }
+        
+        return analysis;
+    },
+});
 
         const analysis = completion.choices[0].message.content;
         // Mock parsing for prototype

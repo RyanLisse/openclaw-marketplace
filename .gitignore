@@ -52,3 +52,4 @@ playwright/.cache/
 tmp/
 temp/
 *.tmp
+temp_build

@@ -127,6 +127,7 @@ export default function NewIntentPage() {
               Skills (comma-separated) *
             </label>
             <SkillAutocomplete
+              key={skills.join(',')}
               value={skillsInput}
               onChange={setSkillsInput}
               selectedSkills={skills}

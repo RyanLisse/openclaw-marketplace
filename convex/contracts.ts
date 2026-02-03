@@ -29,6 +29,8 @@ export const confirmDeposit = internalMutation({
         // Create transaction record
         await ctx.db.insert("transactions", {
             matchId: args.matchId,
+            fromAgentId: match.needAgentId,
+            toAgentId: match.offerAgentId,
             amount: 0, // Should be fetched from match or args
             currency: "USDC", // Should be fetched
             type: "escrow_deposit",
@@ -58,6 +60,8 @@ export const confirmRelease = internalMutation({
 
         await ctx.db.insert("transactions", {
             matchId: args.matchId,
+            fromAgentId: match.needAgentId,
+            toAgentId: match.offerAgentId,
             amount: 0, // Fetch
             currency: "USDC",
             type: "release",
