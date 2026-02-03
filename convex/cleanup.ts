@@ -20,6 +20,13 @@ export const cleanStaleIntents = internalMutation({
     for (const intent of openIntents) {
       if (intent.expiresAt != null && intent.expiresAt < now) {
         await ctx.db.patch(intent._id, { status: 'closed' });
+        await ctx.db.insert('notifications', {
+          agentId: intent.agentId,
+          type: 'intent_closed',
+          message: `Intent "${intent.title}" closed (expired).`,
+          read: false,
+          createdAt: now,
+        });
         closed++;
       }
     }
@@ -41,8 +48,25 @@ export const expireMatches = internalMutation({
       )
       .collect();
 
+    const now = Date.now();
     for (const match of matches) {
       await ctx.db.patch(match._id, { status: 'expired' });
+      await ctx.db.insert('notifications', {
+        agentId: match.needAgentId,
+        type: 'match_expired',
+        message: 'A proposed match has expired.',
+        metadata: { matchId: match._id },
+        read: false,
+        createdAt: now,
+      });
+      await ctx.db.insert('notifications', {
+        agentId: match.offerAgentId,
+        type: 'match_expired',
+        message: 'A proposed match has expired.',
+        metadata: { matchId: match._id },
+        read: false,
+        createdAt: now,
+      });
     }
     return { expired: matches.length };
   },

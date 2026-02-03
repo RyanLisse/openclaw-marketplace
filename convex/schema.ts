@@ -414,6 +414,25 @@ export default defineSchema({
   })
     .index("by_user", ["userId"]),
 
+  // Async Operations (openclaw-marketplace-e8j)
+  async_operations: defineTable({
+    operationId: v.string(),
+    type: v.string(),
+    status: v.union(
+      v.literal('pending'),
+      v.literal('in_progress'),
+      v.literal('completed'),
+      v.literal('failed')
+    ),
+    progress: v.number(), // 0-100
+    result: v.optional(v.any()),
+    error: v.optional(v.string()),
+    createdAt: v.number(),
+    completedAt: v.optional(v.number()),
+  })
+    .index('by_operation_id', ['operationId'])
+    .index('by_status', ['status']),
+
   // Config System (openclaw-marketplace-7vn)
   configs: defineTable({
     key: v.string(),
@@ -437,6 +456,9 @@ export default defineSchema({
       v.literal('message'),
       v.literal('task_completed'),
       v.literal('reputation_change'),
+      v.literal('reputation_decayed'),
+      v.literal('match_expired'),
+      v.literal('intent_closed'),
       v.literal('system')
     ),
     message: v.string(),

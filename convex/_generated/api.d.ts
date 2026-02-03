@@ -13,6 +13,7 @@ import type * as actions_openai from "../actions/openai.js";
 import type * as agents from "../agents.js";
 import type * as apiKeys from "../apiKeys.js";
 import type * as apis from "../apis.js";
+import type * as asyncOperations from "../asyncOperations.js";
 import type * as auth from "../auth.js";
 import type * as clawTasks from "../clawTasks.js";
 import type * as cleanup from "../cleanup.js";
@@ -51,6 +52,7 @@ declare const fullApi: ApiFromModules<{
   agents: typeof agents;
   apiKeys: typeof apiKeys;
   apis: typeof apis;
+  asyncOperations: typeof asyncOperations;
   auth: typeof auth;
   clawTasks: typeof clawTasks;
   cleanup: typeof cleanup;

@@ -15,6 +15,9 @@ const notificationType = v.union(
   v.literal('message'),
   v.literal('task_completed'),
   v.literal('reputation_change'),
+  v.literal('reputation_decayed'),
+  v.literal('match_expired'),
+  v.literal('intent_closed'),
   v.literal('system')
 );
 

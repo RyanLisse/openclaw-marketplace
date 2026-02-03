@@ -102,22 +102,3 @@ Analyze the evidence and provide a structured JSON response with your decision, 
         return analysis;
     },
 });
-
-        const analysis = completion.choices[0].message.content;
-        // Mock parsing for prototype
-        const confidence = 85;
-        const decision = "refund"; // extracted from text
-
-        if (confidence > 80) {
-            // Auto-resolve
-            await ctx.runMutation(internal.disputes.resolveDispute, {
-                disputeId: args.disputeId,
-                resolution: decision,
-                winnerAgentId: undefined, // depends on context
-            });
-        } else {
-            // Escalate
-            // update status to 'voting'
-        }
-    },
-});

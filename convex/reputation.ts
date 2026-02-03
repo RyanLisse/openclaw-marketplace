@@ -188,6 +188,13 @@ export const runDecayForAll = internalMutation({
         reputationScore: weightedScore({ quality: q, reliability: r, communication: c, fairness: f }),
         lastDecayAt: now,
       });
+      await ctx.db.insert('notifications', {
+        agentId: agent.agentId,
+        type: 'reputation_decayed',
+        message: `Reputation decay applied (${months} month(s)).`,
+        read: false,
+        createdAt: now,
+      });
       decayed++;
     }
     return { decayed, total: agents.length };

@@ -36,8 +36,15 @@ export const createDispute = mutation({
         await ctx.db.patch(args.matchId, { status: "disputed" });
 
         // Trigger AI Mediation
+        const needAgent = await ctx.db.query("agents").withIndex("by_agent_id", (q) => q.eq("agentId", match.needAgentId)).first();
+        const offerAgent = await ctx.db.query("agents").withIndex("by_agent_id", (q) => q.eq("agentId", match.offerAgentId)).first();
         await ctx.scheduler.runAfter(0, internal.actions.openai.analyzeDispute, {
             disputeId,
+            matchId: args.matchId,
+            providerReputation: offerAgent?.reputationScore ?? 50,
+            clientReputation: needAgent?.reputationScore ?? 50,
+            amount: "0",
+            tier: 1,
             evidence: args.evidence,
         });
 
