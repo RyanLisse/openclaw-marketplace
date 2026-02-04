@@ -54,13 +54,19 @@ Please upgrade to 22.10.0 or a later LTS version (even major version number)
 
 ### Prerequisites
 
-1. **Get testnet ETH** for gas:
-   - Base Sepolia Faucet: https://www.coinbase.com/faucets/base-ethereum-goerli-faucet
-   - Alchemy Faucet: https://www.alchemy.com/faucets/base-sepolia
+1. **Get testnet ETH** for gas on **Base Sepolia** (not Ethereum Sepolia!):
+   - Coinbase Wallet Faucet: https://portal.cdp.coinbase.com/products/faucet
+   - Alchemy Base Sepolia Faucet: https://www.alchemy.com/faucets/base-sepolia
+   - Chainstack Faucet: https://faucet.chainstack.com/base-sepolia-faucet
 
-2. **Get testnet USDC**:
-   - Circle USDC Faucet: https://faucet.circle.com/
-   - Base Sepolia USDC: `0x036CbD53842c5426634e7929541eC2318f3dCF7e`
+2. **Get testnet USDC** on Base Sepolia:
+   - Circle USDC Faucet: https://faucet.circle.com/ (select Base Sepolia network)
+   - Base Sepolia USDC address: `0x036CbD53842c5426634e7929541eC2318f3dCF7e`
+
+**Why Base Sepolia?**
+- Base is Ethereum L2 with ~100x lower gas fees than Ethereum mainnet
+- ClawTasks uses Base, so we match for ecosystem compatibility
+- Base Sepolia is Base's testnet (NOT Ethereum Sepolia)
 
 3. **Set up environment**:
    ```bash
