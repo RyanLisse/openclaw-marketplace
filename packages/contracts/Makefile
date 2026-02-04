@@ -24,7 +24,7 @@ install:
 	bun install
 
 verify-setup:
-	npx hardhat run scripts/verify-setup.ts --network base-sepolia
+	node scripts/check-wallet.js
 
 build:
 	npx hardhat compile
