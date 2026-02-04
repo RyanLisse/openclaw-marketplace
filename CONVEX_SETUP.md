@@ -2,10 +2,22 @@
 
 ## Initial Setup
 
+**Using Make:**
+```bash
+cd ~/clawd/projects/openclaw-marketplace
+make setup              # install + create packages/frontend/.env.local
+make dev-convex         # Terminal 1: start Convex, copy CONVEX_URL when shown
+# Add NEXT_PUBLIC_CONVEX_URL (and CONVEX_URL) to packages/frontend/.env.local
+make dev                # Terminal 2: start frontend
+```
+
+**Manual steps:**
+
 1. **Start Convex Dev Server**
    ```bash
    cd ~/clawd/projects/openclaw-marketplace
    npx convex dev
+   # or: make dev-convex
    ```
    
    This will:
@@ -18,6 +30,7 @@
    ```bash
    cd packages/frontend
    cp .env.local.example .env.local
+   # or from repo root: make setup
    ```
    
    Edit `.env.local` and add your `CONVEX_URL` from step 1:
@@ -28,6 +41,7 @@
 3. **Start Frontend**
    ```bash
    pnpm dev
+   # or from repo root: make dev
    ```
 
 ## What You Get

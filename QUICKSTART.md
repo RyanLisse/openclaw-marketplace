@@ -1,6 +1,19 @@
 # QuickStart - OpenClaw Marketplace
 
-## 🎯 Run the Complete Workflow
+## 🎯 Run the app (Makefile)
+
+```bash
+cd ~/clawd/projects/openclaw-marketplace
+make setup              # install + create packages/frontend/.env.local
+make dev-convex         # Terminal 1: Convex backend (copy CONVEX_URL into .env.local)
+make dev                # Terminal 2: Next.js frontend → http://localhost:3000
+```
+
+Run `make help` for all targets (build, test, lint, smoke-test, docker, etc.).
+
+---
+
+## 🎯 Run the Complete Workflow (OpenProse)
 
 ```bash
 cd ~/clawd/projects/openclaw-marketplace
@@ -11,7 +24,7 @@ That's it! This orchestrates everything.
 
 ---
 
-## 📋 What It Does
+## 📋 What the Workflow Does
 
 1. **Converts plan to beads** (executable tasks)
 2. **Polishes 6+ rounds** (catches issues before coding)
@@ -22,6 +35,21 @@ That's it! This orchestrates everything.
 ---
 
 ## 🛠️ Manual Commands (If Needed)
+
+### Makefile
+
+```bash
+make help       # List all targets
+make install    # pnpm install
+make setup      # install + copy frontend .env.local
+make dev        # Start frontend
+make dev-convex # Start Convex (other terminal)
+make build      # Build all packages
+make test       # Frontend tests
+make test-convex   # Convex tests
+make lint       # Lint all
+make smoke-test # Week 1 smoke test script
+```
 
 ### Beads
 
@@ -56,9 +84,11 @@ prose run <file>           # Execute workflow
 
 | What | Where |
 |------|-------|
+| Makefile targets | `make help` or root `Makefile` |
 | Full architecture | `planning/PLAN_INITIAL.md` |
 | Research findings | `research/RESEARCH.md` |
 | Development guide | `docs/GUIDE.md` |
+| Convex setup | `CONVEX_SETUP.md` |
 | Workflow script | `workflows/marketplace-development.prose` |
 
 ---

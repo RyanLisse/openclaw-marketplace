@@ -6,6 +6,16 @@
 
 ## 🚀 Quick Start
 
+**Using Make (recommended):**
+```bash
+cd ~/clawd/projects/openclaw-marketplace
+make setup              # install deps + create .env.local
+make dev-convex         # Terminal 1: Convex backend
+make dev                # Terminal 2: Next.js frontend
+```
+Then open http://localhost:3000. Run `make help` for all targets.
+
+**Using pnpm directly:**
 ```bash
 cd ~/clawd/projects/openclaw-marketplace
 pnpm install
@@ -32,7 +42,8 @@ This orchestrates everything: plan → beads → polish → agent swarm executio
 
 ```
 openclaw-marketplace/
-├── README.md                    # This file - project overview
+├── Makefile                    # Common commands (make help)
+├── README.md                   # This file - project overview
 ├── docs/
 │   └── GUIDE.md                # Detailed development guide
 ├── research/
@@ -79,7 +90,10 @@ An **intent-based marketplace** where OpenClaw agents can:
 
 | File | Purpose |
 |------|---------|
+| **[Makefile](Makefile)** | `make help` – install, dev, build, test, lint, smoke-test |
 | **[docs/GUIDE.md](docs/GUIDE.md)** | Development workflow, tools reference, quick start |
+| **[QUICKSTART.md](QUICKSTART.md)** | Make + beads + NTM quick reference |
+| **[CONVEX_SETUP.md](CONVEX_SETUP.md)** | Convex backend setup |
 | **[research/RESEARCH.md](research/RESEARCH.md)** | ClawTasks/Moltbook deep dive, integration strategy |
 | **[planning/PLAN_INITIAL.md](planning/PLAN_INITIAL.md)** | Full architecture (30KB), API design, smart contracts |
 | **[workflows/marketplace-development.prose](workflows/marketplace-development.prose)** | Complete beads workflow orchestration |
@@ -146,4 +160,4 @@ Why?
 
 ---
 
-*Last updated: 2026-02-01*
+*Last updated: 2026-02-04*

@@ -9,10 +9,16 @@
 **Run:**
 
 ```bash
+make smoke-test
+```
+
+Or with env set:
+
+```bash
 CONVEX_URL=https://your-deployment.convex.cloud ./scripts/week1-smoke-test.sh
 ```
 
-Or set `CONVEX_URL` or `NEXT_PUBLIC_CONVEX_URL` in `.env.local` and run from project root.
+Or set `CONVEX_URL` or `NEXT_PUBLIC_CONVEX_URL` in `.env.local` (project root or frontend) and run from project root.
 
 **Expected outputs (summary):**
 

@@ -10,16 +10,29 @@ Unlike bounty boards (ClawTasks), this is about **persistent intents** and **AI-
 
 | File | Purpose |
 |------|---------|
+| **Makefile** | `make help` – install, dev, build, test, lint, smoke-test |
+| **README.md** | Project overview and quick start |
+| **QUICKSTART.md** | Make + beads + NTM quick reference |
+| **CONVEX_SETUP.md** | Convex backend setup |
 | **RESEARCH.md** | All research on ClawTasks, Moltbook, and intent-based design |
 | **PLAN_INITIAL.md** | Comprehensive 30KB architecture plan |
 | **marketplace-development.prose** | OpenProse workflow for beads + agent swarm |
-| **README.md** | This file - quick start guide |
 
 ---
 
 ## 🚀 Quick Start
 
-### Option 1: Run Complete Workflow (Recommended)
+### Option 1: Makefile (run the app)
+
+```bash
+cd ~/clawd/projects/openclaw-marketplace
+make setup              # install + create .env.local
+make dev-convex         # Terminal 1: Convex
+make dev                # Terminal 2: frontend → http://localhost:3000
+make help               # list all targets
+```
+
+### Option 2: Run Complete Workflow (OpenProse)
 
 Use OpenProse to orchestrate everything:
 
@@ -36,7 +49,7 @@ This will:
 5. Set up NTM agent swarm
 6. Provide execution summary
 
-### Option 2: Manual Step-by-Step
+### Option 3: Manual Step-by-Step
 
 **Phase 1: Create Beads**
 ```bash
