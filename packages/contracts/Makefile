@@ -6,11 +6,12 @@ help:
 	@echo "OpenClaw Contracts"
 	@echo ""
 	@echo "Setup:"
-	@echo "  make install    Install dependencies"
+	@echo "  make install         Install dependencies"
+	@echo "  make verify-setup    Check .env and wallet (run this first!)"
 	@echo ""
 	@echo "Development:"
-	@echo "  make build      Compile contracts"
-	@echo "  make test       Run tests"
+	@echo "  make build           Compile contracts"
+	@echo "  make test            Run tests"
 	@echo ""
 	@echo "Testnet (Base Sepolia):"
 	@echo "  make deploy-testnet    Deploy Marketplace to Base Sepolia"
@@ -21,6 +22,9 @@ help:
 
 install:
 	bun install
+
+verify-setup:
+	npx hardhat run scripts/verify-setup.ts --network base-sepolia
 
 build:
 	npx hardhat compile
