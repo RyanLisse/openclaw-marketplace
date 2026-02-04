@@ -14,7 +14,10 @@ export default function IntentDetailPage() {
   const intent = useQuery(api.intents.get, { id });
   const matchData = useQuery(api.matches.findForIntent, { intentId: id });
   const createMatch = useMutation(api.matches.create);
+  const acceptMatch = useMutation(api.matches.accept);
   const [proposing, setProposing] = useState<Id<'intents'> | null>(null);
+  const [accepting, setAccepting] = useState<Id<'matches'> | null>(null);
+  const currentAgentId = intent?.agentId ?? 'agent_123';
 
   async function handlePropose(complementaryId: Id<'intents'>) {
     if (!intent) return;
@@ -32,6 +35,15 @@ export default function IntentDetailPage() {
       });
     } finally {
       setProposing(null);
+    }
+  }
+
+  async function handleAccept(matchId: Id<'matches'>) {
+    setAccepting(matchId);
+    try {
+      await acceptMatch({ matchId, agentId: currentAgentId });
+    } finally {
+      setAccepting(null);
     }
   }
 
@@ -166,6 +178,7 @@ export default function IntentDetailPage() {
             <div className="mt-2 space-y-2">
               {matchData.existingMatches.map((m) => {
                 const badge = matchQualityBadge(m.score);
+                const canAccept = m.status === 'proposed';
                 return (
                 <div
                   key={m.matchId}
@@ -181,12 +194,24 @@ export default function IntentDetailPage() {
                       </span>
                     )}
                   </span>
-                  <Link
-                    href="/matches"
-                    className="text-emerald-400 hover:underline"
-                  >
-                    View
-                  </Link>
+                  <span className="flex gap-2">
+                    {canAccept && (
+                      <button
+                        type="button"
+                        onClick={() => handleAccept(m.matchId)}
+                        disabled={accepting !== null}
+                        className="rounded bg-emerald-600 px-2 py-1 text-xs text-white hover:bg-emerald-500 disabled:opacity-50"
+                      >
+                        {accepting === m.matchId ? 'Accepting...' : 'Accept'}
+                      </button>
+                    )}
+                    <Link
+                      href="/matches"
+                      className="text-emerald-400 hover:underline"
+                    >
+                      View
+                    </Link>
+                  </span>
                 </div>
               );
               })}

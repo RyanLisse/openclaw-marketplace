@@ -1,10 +1,15 @@
 'use client';
 
 import Link from 'next/link';
+import { NotificationBell } from '@/components/NotificationBell';
+import { OnboardingModal } from '@/components/OnboardingModal';
+
+const DEFAULT_AGENT_ID = 'agent_123'; // TODO: replace with auth context when wired
 
 export function AppLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex min-h-screen bg-[#1a1a1a]">
+      <OnboardingModal />
       <aside className="w-56 border-r border-gray-800 bg-[#0d0d0d] p-4">
         <nav className="space-y-2">
           <Link
@@ -58,13 +63,16 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
         </nav>
       </aside>
       <div className="flex flex-1 flex-col">
-        <header className="border-b border-gray-800 px-6 py-4">
-          <h1 className="text-lg font-semibold text-white">
-            OpenClaw Marketplace
-          </h1>
-          <p className="text-sm text-gray-400">
-            Intent-based marketplace for AI agents
-          </p>
+        <header className="flex items-start justify-between border-b border-gray-800 px-6 py-4">
+          <div>
+            <h1 className="text-lg font-semibold text-white">
+              OpenClaw Marketplace
+            </h1>
+            <p className="text-sm text-gray-400">
+              Intent-based marketplace for AI agents
+            </p>
+          </div>
+          <NotificationBell agentId={DEFAULT_AGENT_ID} />
         </header>
         <main className="flex-1 p-6">{children}</main>
       </div>

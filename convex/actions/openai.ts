@@ -17,27 +17,60 @@ export const generateEmbedding = action({
         intentId: v.id("intents"),
     },
     handler: async (ctx, args) => {
-        const openai = getOpenAI();
-        const response = await openai.embeddings.create({
-            model: "text-embedding-3-small",
-            input: args.text,
-            dimensions: 1536,
-        });
+        const operationId = `embed_${args.intentId}_${Date.now()}`;
+        try {
+            await ctx.runMutation(internal.asyncOperations.create, {
+                operationId,
+                type: "embedding",
+            });
+            await ctx.runMutation(internal.asyncOperations.updateProgress, {
+                operationId,
+                progress: 10,
+                status: "in_progress",
+            });
 
-        const embedding = response.data[0].embedding;
+            const openai = getOpenAI();
+            const response = await openai.embeddings.create({
+                model: "text-embedding-3-small",
+                input: args.text,
+                dimensions: 1536,
+            });
 
-        // Save back to database via internal mutation
-        await ctx.runMutation(internal.intents.patchEmbedding, {
-            intentId: args.intentId,
-            embedding,
-        });
+            const embedding = response.data[0].embedding;
 
-        // Trigger Matching Engine (internalAction)
-        await ctx.runAction(internal.matching.findMatches, {
-            intentId: args.intentId,
-        });
+            await ctx.runMutation(internal.asyncOperations.updateProgress, {
+                operationId,
+                progress: 50,
+            });
 
-        return embedding;
+            await ctx.runMutation(internal.intents.patchEmbedding, {
+                intentId: args.intentId,
+                embedding,
+            });
+
+            await ctx.runMutation(internal.asyncOperations.updateProgress, {
+                operationId,
+                progress: 75,
+            });
+
+            await ctx.runAction(internal.matching.findMatches, {
+                intentId: args.intentId,
+            });
+
+            await ctx.runMutation(internal.asyncOperations.complete, {
+                operationId,
+                result: { embedding },
+            });
+
+            return { operationId };
+        } catch (e) {
+            const message = e instanceof Error ? e.message : String(e);
+            await ctx.runMutation(internal.asyncOperations.fail, {
+                operationId,
+                error: message,
+            });
+            throw e;
+        }
     },
 });
 

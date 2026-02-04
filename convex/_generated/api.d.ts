@@ -9,7 +9,9 @@
  */
 
 import type * as actions_chain from "../actions/chain.js";
+import type * as actions_classify from "../actions/classify.js";
 import type * as actions_openai from "../actions/openai.js";
+import type * as actions_scoreMatch from "../actions/scoreMatch.js";
 import type * as agents from "../agents.js";
 import type * as apiKeys from "../apiKeys.js";
 import type * as apis from "../apis.js";
@@ -25,6 +27,7 @@ import type * as intents from "../intents.js";
 import type * as lib_contextBuilder from "../lib/contextBuilder.js";
 import type * as lib_promptLoader from "../lib/promptLoader.js";
 import type * as lib_seedConfigs from "../lib/seedConfigs.js";
+import type * as lib_validate from "../lib/validate.js";
 import type * as matches from "../matches.js";
 import type * as matching from "../matching.js";
 import type * as moltbook from "../moltbook.js";
@@ -48,7 +51,9 @@ import type {
 
 declare const fullApi: ApiFromModules<{
   "actions/chain": typeof actions_chain;
+  "actions/classify": typeof actions_classify;
   "actions/openai": typeof actions_openai;
+  "actions/scoreMatch": typeof actions_scoreMatch;
   agents: typeof agents;
   apiKeys: typeof apiKeys;
   apis: typeof apis;
@@ -64,6 +69,7 @@ declare const fullApi: ApiFromModules<{
   "lib/contextBuilder": typeof lib_contextBuilder;
   "lib/promptLoader": typeof lib_promptLoader;
   "lib/seedConfigs": typeof lib_seedConfigs;
+  "lib/validate": typeof lib_validate;
   matches: typeof matches;
   matching: typeof matching;
   moltbook: typeof moltbook;

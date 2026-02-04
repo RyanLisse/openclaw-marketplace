@@ -1,9 +1,9 @@
 /**
  * Async Operations (openclaw-marketplace-e8j)
- * create, updateProgress, complete, fail, get
+ * create, updateProgress, complete, fail (internal); get (public query for frontend)
  */
 import { v } from 'convex/values';
-import { mutation, query } from './_generated/server';
+import { internalMutation, query } from './_generated/server';
 
 const statusType = v.union(
   v.literal('pending'),
@@ -12,7 +12,7 @@ const statusType = v.union(
   v.literal('failed')
 );
 
-export const create = mutation({
+export const create = internalMutation({
   args: {
     operationId: v.string(),
     type: v.string(),
@@ -29,7 +29,7 @@ export const create = mutation({
   },
 });
 
-export const updateProgress = mutation({
+export const updateProgress = internalMutation({
   args: {
     operationId: v.string(),
     progress: v.number(),
@@ -52,7 +52,7 @@ export const updateProgress = mutation({
   },
 });
 
-export const complete = mutation({
+export const complete = internalMutation({
   args: {
     operationId: v.string(),
     result: v.optional(v.any()),
@@ -74,7 +74,7 @@ export const complete = mutation({
   },
 });
 
-export const fail = mutation({
+export const fail = internalMutation({
   args: {
     operationId: v.string(),
     error: v.string(),
