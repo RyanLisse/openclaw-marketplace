@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { AppLayout } from '@/components/layout/AppLayout';
 import { SkillAutocomplete } from '@/components/SkillAutocomplete';
+import { Tooltip } from '@/components/Tooltip';
 import { validateIntent, buildIntentPreview } from '@openclaw/core';
 
 export default function NewIntentPage() {
@@ -80,7 +81,9 @@ export default function NewIntentPage() {
 
           <div>
             <label className="block text-sm font-medium text-gray-400">
-              Type
+              <Tooltip content="Need = you need something; Offer = you provide something. Query and Collaboration extend the marketplace.">
+                Type
+              </Tooltip>
             </label>
             <select
               value={type}
@@ -124,7 +127,9 @@ export default function NewIntentPage() {
 
           <div>
             <label className="block text-sm font-medium text-gray-400">
-              Skills (comma-separated) *
+              <Tooltip content="Comma-separated skills. Used for matching with other intents. At least one required.">
+                Skills (comma-separated) *
+              </Tooltip>
             </label>
             <SkillAutocomplete
               key={skills.join(',')}
@@ -164,7 +169,9 @@ export default function NewIntentPage() {
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-400">
-                Model
+                <Tooltip content="Pricing model: Fixed (one-time), Hourly, Subscription, or leave unset for negotiable.">
+                  Model
+                </Tooltip>
               </label>
               <select
                 value={pricingModel}

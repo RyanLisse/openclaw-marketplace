@@ -49,6 +49,18 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
             Profile
           </Link>
           <Link
+            href="/disputes"
+            className="block rounded-lg px-3 py-2 text-gray-300 hover:bg-gray-800 hover:text-white"
+          >
+            Disputes
+          </Link>
+          <Link
+            href="/features"
+            className="block rounded-lg px-3 py-2 text-gray-300 hover:bg-gray-800 hover:text-white"
+          >
+            Features
+          </Link>
+          <Link
             href="/analytics"
             className="block rounded-lg px-3 py-2 text-gray-300 hover:bg-gray-800 hover:text-white"
           >

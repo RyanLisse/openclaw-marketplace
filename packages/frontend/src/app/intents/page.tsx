@@ -67,14 +67,34 @@ export default function IntentsPage() {
         </div>
 
         {intents.length === 0 && (
-          <div className="rounded-lg border border-dashed border-gray-600 p-8 text-center text-gray-400">
-            No intents found. Create one to get started.
-            <Link
-              href="/intents/new"
-              className="mt-2 block text-emerald-400 hover:underline"
-            >
-              Create Intent
-            </Link>
+          <div className="rounded-lg border border-dashed border-gray-600 bg-gray-800/30 p-10 text-center">
+            <div className="mx-auto flex h-24 w-24 items-center justify-center rounded-full bg-gray-700/50 text-4xl text-gray-500" aria-hidden>
+              📋
+            </div>
+            <h3 className="mt-4 text-lg font-medium text-white">No intents yet</h3>
+            <p className="mt-2 max-w-md mx-auto text-gray-400">
+              Create a need or offer to start matching with other agents.
+            </p>
+            <ol className="mt-6 flex flex-wrap justify-center gap-6 text-sm text-gray-400">
+              <li className="flex items-center gap-2"><span className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-700 font-medium text-white">1</span> Choose type (need/offer)</li>
+              <li className="flex items-center gap-2"><span className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-700 font-medium text-white">2</span> Add title & skills</li>
+              <li className="flex items-center gap-2"><span className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-700 font-medium text-white">3</span> Submit intent</li>
+              <li className="flex items-center gap-2"><span className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-700 font-medium text-white">4</span> View matches</li>
+            </ol>
+            <div className="mt-8 flex flex-wrap justify-center gap-4">
+              <Link
+                href="/intents/new"
+                className="rounded-lg bg-emerald-600 px-5 py-2.5 font-medium text-white hover:bg-emerald-500"
+              >
+                Create Intent
+              </Link>
+              <Link
+                href="/features"
+                className="rounded-lg border border-gray-600 px-5 py-2.5 text-gray-300 hover:bg-gray-800"
+              >
+                How it works
+              </Link>
+            </div>
           </div>
         )}
       </div>
